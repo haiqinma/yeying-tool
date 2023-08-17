@@ -21,7 +21,7 @@ if [ $# -eq 0 ]; then
 fi
 
 # For macos`s getopt, reference: https://formulae.brew.sh/formula/gnu-getopt
-while getopts ":t:d:o:c" o; do
+while getopts ":t:d:o:c:" o; do
   case "${o}" in
   d)
     domain=${OPTARG}
