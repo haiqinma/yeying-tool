@@ -92,7 +92,7 @@ elif [ "${type}" == "server" ]; then
   server_cert="${output}"/server-cert.pem
   server_ext="${output}"/server-ext.cnf
   echo "subjectAltName=DNS:*.${domain},DNS:localhost,IP:0.0.0.0" >"${server_ext}"
-  openssl x509 -req -in "${server_req}" -days 60 -CA "${ca_cert}" -CAkey "${ca_key}" -CAcreateserial \
+  openssl x509 -req -in "${server_req}" -days 180 -CA "${ca_cert}" -CAkey "${ca_key}" -CAcreateserial \
     -out "${server_cert}" \
     -extfile "${server_ext}"
 
