@@ -8,10 +8,12 @@ runtime_directory=$(
 
 usage() {
   printf "Usage: %s\n \
-    -t <Specify the cert type, such as ca, server, client \n \
-    -o <Specify the output directory, default ./cert \n \
-    -c <Specify the ca directory when generating server or client certificate \n \
-    -d <Specify the domain name, such as yeying.pub or odsn.pub and so on \n \
+    -a <Specify the action for cert: generate, check and so on> \n \
+    -t <Specify the generate cert type, such as ca, server, client> \n \
+    -o <Specify the output directory, default ./cert> \n \
+    -c <Specify the ca directory when generating server or client certificate> \n \
+    -d <Specify the domain name, such as yeying.pub or odsn.pub and so on> \n \
+    -f <Specify the cert file> \n \
     " "${base_name}"
   exit 1
 }
@@ -21,8 +23,11 @@ if [ $# -eq 0 ]; then
 fi
 
 # For macos`s getopt, reference: https://formulae.brew.sh/formula/gnu-getopt
-while getopts ":t:d:o:c:" o; do
+while getopts ":t:d:o:c:a:f:" o; do
   case "${o}" in
+  a)
+    action=${OPTARG}
+    ;;
   d)
     domain=${OPTARG}
     ;;
@@ -35,12 +40,20 @@ while getopts ":t:d:o:c:" o; do
   c)
     ca_dir=${OPTARG}
     ;;
+  f)
+    ca_file=${OPTARG}
+    ;;
   *)
     usage
     ;;
   esac
 done
 shift $((OPTIND - 1))
+
+if [ "${action}" == "check" ]; then
+    openssl x509 -in ${ca_file} -noout text   
+    exit 0
+fi
 
 if [ -z "${type}" ]; then
   echo "Please specify the cert type to generate!"
