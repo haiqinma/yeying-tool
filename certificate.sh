@@ -1,7 +1,7 @@
 #!/bin/sh
 
 base_name="${0##*/}"
-runtime_directory=$(
+script_dir=$(
   cd "$(dirname "$0")" || exit 1
   pwd
 )
@@ -51,24 +51,24 @@ done
 shift $((OPTIND - 1))
 
 if [ -z "${output}" ]; then
-  output="${runtime_directory}/output"
+  output=${script_dir}/output
 fi
 
-crt_dir="${output}/crt"
-ca_dir="${output}/ca"
+crt_dir=${output}/crt/${domain}
+ca_dir=${output}/ca
 
 echo "use action=${action}"
 if [ "${action}" == "check" ]; then
   echo "Check certificate=${crt_file}" 
-  openssl x509 -in ${crt_file} -noout -text
+  openssl x509 -in "${crt_file}" -noout -text
 elif [ "${action}" == "sign" ]; then
   # Use CA's private key to sign csr and get back the signed certificate
-  csr="${crt_dir}"/certificate.csr
-  crt="${crt_dir}"/certificate.crt
-  ext="${crt_dir}"/certificate.ext
+  csr=${crt_dir}/certificate.csr
+  crt=${crt_dir}/certificate.crt
+  ext=${crt_dir}/certificate.ext
 
-  ca_crt="${ca_dir}"/ca.crt
-  ca_key="${ca_dir}"/ca.key
+  ca_crt=${ca_dir}/ca.crt
+  ca_key=${ca_dir}/ca.key
 
   echo "subjectAltName=DNS:*.${domain},DNS:localhost,IP:0.0.0.0" >"${ext}"
   openssl x509 -req -in "${csr}" -days 180 -CA "${ca_crt}" -CAkey "${ca_key}" -CAcreateserial \
@@ -96,8 +96,8 @@ elif [ "${action}" == "generate" ]; then
     echo "Generate CA's private key and self-signed certificate"
     mkdir -p "${ca_dir}"
 
-    ca_crt="${ca_dir}"/ca.crt
-    ca_key="${ca_dir}"/ca.key
+    ca_crt=${ca_dir}/ca.crt
+    ca_key=${ca_dir}/ca.key
   
     openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
       -keyout "${ca_key}" \
@@ -110,11 +110,11 @@ elif [ "${action}" == "generate" ]; then
     echo "Generate private key and certificate signing request (CSR)"
     mkdir -p "${crt_dir}"
 
-    ca_crt="${ca_dir}"/ca.crt
-    ca_key="${ca_dir}"/ca.key
+    ca_crt=${ca_dir}/ca.crt
+    ca_key=${ca_dir}/ca.key
   
-    key="${crt_dir}"/certificate.key
-    csr="${crt_dir}"/certificate.csr
+    key=${crt_dir}/certificate.key
+    csr=${crt_dir}/certificate.csr
 
     openssl req -newkey rsa:4096 -sha256 -nodes \
       -keyout "${key}" \
