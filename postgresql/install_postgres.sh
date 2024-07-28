@@ -86,8 +86,8 @@ CREATE TABLE network_identity(
     code        varchar(32)        not null default 'personal',
     name        varchar(128)       not null,
     extend      text               not null,
-    update_time timestamp          not null default now(),
-    CREATE_time timestamp          not null default now(),
+    created     timestamp          not null,
+    checkpoint  timestamp          not null,
     parent      varchar(128)
 );
 
@@ -109,8 +109,8 @@ CREATE TABLE node_application(
     publisher       varchar(128)    not null,
     service_codes   text            not null,
     extend          text            not null,
-    CREATE_time     timestamp       not null default now(),
-    update_time     timestamp       not null default now()
+    created         timestamp       not null default now(),
+    checkpoint      timestamp       not null default now()
 );
 CREATE INDEX idx_application_code ON node_application (code);
 CREATE UNIQUE INDEX uk_application_uid ON node_application (uid);
@@ -123,20 +123,19 @@ CREATE TABLE node_invitation(
     scene           varchar(32)     not null default 'register',
     code            varchar(128)    not null,
     expired_time    timestamp       not null,
-    service_did     varchar(128)    not null,
-    inviter         varchar(128)    not null default 'system',
+    inviter         varchar(128)    not null,
     invitee         varchar(128),
-    CREATE_time     timestamp       not null default now(),
+    create_time     timestamp       not null default now(),
     update_time     timestamp       not null default now()
 );
 
 COMMENT ON COLUMN node_invitation.code IS '邀请码';
-COMMENT ON COLUMN node_invitation.CREATE_time IS '创建时间';
+COMMENT ON COLUMN node_invitation.create_time IS '创建时间';
 COMMENT ON COLUMN node_invitation.expired_time IS '邀请码有效截止时间';
 COMMENT ON COLUMN node_invitation.invitee IS '受邀方';
 COMMENT ON COLUMN node_invitation.inviter IS '邀请方';
-COMMENT ON COLUMN node_invitation.scene IS '邀请码使用场景';
 COMMENT ON COLUMN node_invitation.service_did IS '要加入的供应商DID';
+COMMENT ON COLUMN node_invitation.scene IS '邀请码使用场景';
 COMMENT ON COLUMN node_invitation.update_time IS '更新时间';
 CREATE INDEX idx_invitation_invitee on node_invitation (invitee);
 CREATE UNIQUE INDEX uk_invitation_code on node_invitation (code);
@@ -155,7 +154,7 @@ CREATE TABLE node_task
     operator        text            not null,
     status          varchar(64)     not null,
     extend          text            not null,
-    CREATE_time     timestamp       not null default now(),
+    create_time     timestamp       not null default now(),
     update_time     timestamp       not null default now()
 );
 
@@ -165,22 +164,16 @@ ALTER TABLE node_task OWNER TO yeying;
 
 CREATE TABLE node_user(
     id          serial primary key not null,
-    service_did varchar(128)       not null,
-    role        varchar(64)        not null default 'USER_ROLE_NORMAL',
     name        varchar(128)       not null,
     did         varchar(128)       not null,
-    telephone   varchar(20)        not null,
-    email       varchar(320)       not null,
+    role        varchar(64)        not null default 'USER_ROLE_NORMAL',
     status      varchar(64)        not null default 'USER_STATUS_ACTIVE',
     extend      text               not null default '',
-    update_time timestamp          not null default now(),
-    CREATE_time timestamp          not null default now(),
-    avatar      text               not null
+    created     timestamp          not null,
+    checkpoint  timestamp          not null
 );
 
-CREATE INDEX idx_user_email ON node_user (email);
 CREATE INDEX idx_user_name ON node_user (name);
-CREATE INDEX idx_user_telephone ON node_user (telephone);
 CREATE UNIQUE INDEX uk_user_did ON node_user (did);
 
 ALTER TABLE node_user OWNER TO yeying;
