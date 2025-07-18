@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - psql-network
+    command: postgres -c 'max_connections=200' -c 'shared_buffers=256MB'
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      timeout: 5s
+      retries: 3
+networks:
+  psql-network:
+    name: "psql-network"
+    driver: bridge
