@@ -6,9 +6,12 @@ services:
       - .env  # 加载 .env 文件中的环境变量
     volumes:
       - ./data:/var/lib/mysql/
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.db:/docker-entrypoint-initdb.d
     ports:
       - 3306:3306
-    command:
-      --default-authentication-plugin=mysql_native_password
-      --lower_case_table_names=1
+    networks:
+      - mysql-network
+networks:
+  bookstack-network:
+    name: "mysql-network"
+    driver: bridge
