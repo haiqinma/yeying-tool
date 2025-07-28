@@ -12,6 +12,6 @@ services:
     networks:
       - mysql-network
 networks:
-  bookstack-network:
+  mysql-network:
     name: "mysql-network"
     driver: bridge
