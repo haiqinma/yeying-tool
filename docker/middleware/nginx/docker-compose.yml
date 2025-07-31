@@ -1,0 +1,17 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: my-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # 如果有静态文件服务
+      # - ./html:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - nginx-network
+networks:
+  nginx-network:
+    name: "nginx-network"
+    driver: bridge

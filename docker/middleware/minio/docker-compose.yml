@@ -13,4 +13,11 @@ services:
       - "9011:9011"
     volumes:
       - ./data:/data
+    networks:
+      - minio-network
+networks:
+  minio-network:
+    name: "minio-network"
+    driver: bridge
+
 
