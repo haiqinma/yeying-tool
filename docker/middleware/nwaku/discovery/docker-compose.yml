@@ -1,0 +1,19 @@
+services:
+  waku-discovery:
+    image: wakuorg/go-waku:v0.9.0
+    container_name: waku-discovery
+    command:
+      [
+        "--discv5-enr-auto-update=false",
+        "--discv5-udp-port=9000",
+        "--discv5-bootstrap-node=",
+        "--rest",
+        "--rest-address=0.0.0.0",
+        "--rest-port=8660"
+      ]
+    ports:
+      - "9000:9000/udp"
+      - "8660:8660" # REST API
+    volumes:
+      - ./nodekey.hex:/data/nodekey.hex
+
