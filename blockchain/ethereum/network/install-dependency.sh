@@ -8,10 +8,10 @@ source common.sh
 # 检测系统
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
-PRYSM_VERSION=v6.0.3
 PYTHON_VERSION=3.12
 GO_VERSION=1.24.2
-GETH_VERSION=v1.16.1
+GETH_VERSION=v1.16.2
+PRYSM_VERSION=v6.0.3
 ETH2_VAL_TOOLS_VERSION=v0.1.1
 
 case $ARCH in
@@ -121,6 +121,15 @@ install_go() {
     # 构建文件名和下载URL
     local FILENAME="go${GO_VERSION}.${OS}-${ARCH}.tar.gz"
 
+    # 获取当前 Go 版本
+    CURRENT_VERSION=$(go version | awk '{print $3}' | sed 's/go//')
+
+    # 检查版本
+    if [ "$CURRENT_VERSION" == "$GO_VERSION" ]; then
+        printf "\033[33m[INFO]\033[0m Go ${GO_VERSION} is already installed\n"
+        return 0
+    fi
+
     # 检查是否已经下载过
     if [[ -f "${DOWNLOAD_DIR}/${FILENAME}" ]]; then
         printf "\033[33m[WARN]\033[0m Go already downloaded: ${GO_VERSION}\n"
@@ -193,6 +202,7 @@ install_geth() {
     # 复制到系统路径, 请把这个路径<parent directory>build/bin添加到PATH环境变量中
     if [[ ! -f $BINARY_DIR/geth ]]; then
         cd go-ethereum
+	git checkout $GETH_VERSION
         make geth
         printf "\033[32m[SUCCESS]\033[0m Geth installed: $(build/bin/geth version | head -n1)\n"
         cp -rf build/bin/* $BINARY_DIR
@@ -204,7 +214,7 @@ install_geth() {
 install_beacon_chain() {
     printf "\033[32m[INFO]\033[0m Installing beacon-chain binary...\n"
     local FILENAME=beacon-chain-${PRYSM_VERSION}-${OS}-${ARCH}
-    if [[ -f "${DOWNLOAD_DIR}/${name}" ]]; then
+    if [[ -f "${DOWNLOAD_DIR}/${FILENAME}" ]]; then
         printf "\033[33m[WARN]\033[0m Beacon-chain installed: ${PRYSM_VERSION}\n"
         cp -f ${DOWNLOAD_DIR}/${FILENAME} ${BINARY_DIR}/beacon-chain
         chmod +x ${BINARY_DIR}/beacon-chain
@@ -260,11 +270,10 @@ install_prysmctl() {
 
 
     BASE_URL="https://github.com/prysmaticlabs/prysm/releases/download/${PRYSM_VERSION}"
-    # local download_url="https://github.com/OffchainLabs/prysm/releases/download/${version}/${binary_name}"
     echo "📦 Downloading prysmctl..."
-    if curl -L "${BASE_URL}/${name}" -o dist/${name}; then
-        cp -f dist/${name} prysmctl
-        chmod +x prysmctl
+    if curl -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
+        cp -f ${DOWNLOAD_DIR}/${FILENAME} ${BINARY_DIR}/prysmctl
+        chmod +x ${BINARY_DIR}/prysmctl
         echo "✅ prysmctl downloaded"
     else
         echo "❌ Failed to download prysmctl"
@@ -336,7 +345,7 @@ install_eth2_val_tools() {
 
     if command -v eth2-val-tools &>/dev/null; then
         printf "\033[33m[WARN]\033[0m eth2-val-tools already installed\n"
-        return
+        return 0
     fi
 
     # 检查是否安装了Go
@@ -381,7 +390,7 @@ install_eth_beacon_genesis() {
 
     if command -v eth-beacon-genesis &>/dev/null; then
         printf "\033[33m[WARN]\033[0m eth-beacon-genesis already installed\n"
-        return
+        return 0
     fi
 
     # 检查是否安装了Go

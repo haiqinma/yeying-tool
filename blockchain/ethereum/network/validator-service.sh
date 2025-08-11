@@ -63,12 +63,18 @@ start_validator() {
         --beacon-rpc-provider localhost:4000 \
         --suggested-fee-recipient ${RECIPIENT_ADDRESS} \
         --log-file $OUTPUT_DIR/logs/validator.log \
-        --verbosity debug"
+        --verbosity info"
 
     if [[ "$1" == "background" ]]; then
-        eval "$validator_cmd" >$OUTPUT_DIR/logs/validator_cmd.log 2>&1 &
+        eval "$validator_cmd" &
         echo $! >$OUTPUT_DIR/.validator.pid
-        log_info "Validator started in background (PID: $(cat $OUTPUT_DIR/.validator.pid))"
+        wait $pid
+        exit_status=$?
+        if [[ $exit_status -ne 0 ]]; then
+            "Validator failed to start. Exit status: $exit_status"
+        else
+            log_info "Validator started in background (PID: $(cat $OUTPUT_DIR/.validator.pid))"
+        fi
 
         # 等待 Validator 就绪
         wait_for_service "Validator" "curl -s http://localhost:8081/metrics | grep -q validator" 30 2

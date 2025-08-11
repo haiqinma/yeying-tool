@@ -123,7 +123,7 @@ start_geth() {
         --keystore $OUTPUT_DIR/accounts \
         --password $OUTPUT_DIR/config/password.txt \
         --state.scheme=path \
-        --identity \"Devnet\" \
+        --identity \"${NETWORK_NAME}\" \
         --port 30303 \
         --discovery.port 30303 \
         $BOOTNODE_ENODE \
@@ -148,12 +148,18 @@ start_geth() {
         --syncmode full \
         --maxpeers 21 \
         --log.file $OUTPUT_DIR/logs/geth.log \
-        --verbosity 3"
+        --verbosity info"
 
     if [[ "$1" == "background" ]]; then
-        eval "$geth_cmd" >$OUTPUT_DIR/logs/geth_cmd.log 2>&1 &
+        eval "$geth_cmd" &
         echo $! >$OUTPUT_DIR/.geth.pid
-        log_info "Geth started in background (PID: $(cat $OUTPUT_DIR/.geth.pid))"
+        wait $pid
+        exit_status=$?
+        if [[ $exit_status -ne 0 ]]; then
+            log_error "Geth failed to start. Exit status: $exit_status"
+        else
+            log_info "Geth started in background (PID: $(cat $OUTPUT_DIR/.geth.pid))"
+        fi
 
         # 等待 Geth 就绪
         wait_for_service "Geth" "curl -s -X POST -H \"Content-Type: application/json\" --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' http://localhost:8545" 120 2

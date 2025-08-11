@@ -254,12 +254,19 @@ start_beacon() {
         --suggested-fee-recipient ${RECIPIENT_ADDRESS} \
         --minimum-peers-per-subnet 0 \
         --log-file $OUTPUT_DIR/logs/beacon.log \
-        --verbosity debug"
+        --verbosity info"
 
     if [[ "$1" == "background" ]]; then
-        eval "$beacon_cmd" >$OUTPUT_DIR/logs/beacon_cmd.log 2>&1 &
+        eval "$beacon_cmd" &
         echo $! >$OUTPUT_DIR/.beacon.pid
-        log_info "Beacon Chain started in background (PID: $(cat $OUTPUT_DIR/.beacon.pid))"
+        wait $pid
+        exit_status=$?
+        if [[ $exit_status -ne 0 ]]; then
+            log_error "Beacon Chain failed to start. Exit status: $exit_status"
+        else
+            log_info "Beacon Chain started in background (PID: $(cat $OUTPUT_DIR/.beacon.pid))"
+        fi
+
 
         # 等待 Beacon Chain 就绪
         wait_for_service "Beacon Chain" "curl -s http://localhost:3500/eth/v1/node/health" 120 2
