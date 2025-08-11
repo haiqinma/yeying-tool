@@ -13,9 +13,6 @@ setup_geth_config() {
         exit 1
     fi
 
-    # 读取账户地址
-    USER_ADDRESS=$(get_user_address)
-
     # 确保配置已设置
     if [[ ! -f "$OUTPUT_DIR/data/execution/genesis.json" ]]; then
         log_info "Geth not configured, setting up now..."
@@ -45,6 +42,18 @@ generate_genesis_time() {
 # 创建执行层创世配置
 create_execution_genesis() {
     log_info "Creating execution layer genesis..."
+
+    # 读取账户地址
+    USER_ADDRESS=$(get_user_address)
+    # ETH 个数
+    PRE_FUNDED=50000000
+
+    printf "${GREEN}Pre-funded Account:${NC}\n"
+    printf "  Address: %s\n" "${USER_ADDRESS}"
+    printf "  Balance: ${PRE_FUNDED} ETH (pre-funded)\n"
+    printf "\n"
+
+    local pre_fund=$(echo "obase=16; ${PRE_FUNDED} * 1000000000000000000" | bc)
 
     # 生成统一的时间戳
     local GENESIS_TIMESTAMP=$(cat $OUTPUT_DIR/config/genesis_timestamp.txt)
@@ -94,7 +103,7 @@ create_execution_genesis() {
   "timestamp": "${GENESIS_TIMESTAMP_HEX}",
   "alloc": {
     "${USER_ADDRESS}": {
-      "balance": "0x422ca8b0a00a425000000"
+      "balance": "0x${pre_fund}"
     }
   }
 }
@@ -149,6 +158,7 @@ start_geth() {
         --maxpeers 21 \
         --log.file $OUTPUT_DIR/logs/geth.log \
         --verbosity 3"
+
 
     if [[ "$1" == "background" ]]; then
         eval "$geth_cmd" > /dev/null 2>&1 &

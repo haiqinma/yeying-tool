@@ -91,13 +91,6 @@ show_usage_info() {
     printf "           http://localhost:8545\n"
     printf "\n"
 
-    if [[ -f "$OUTPUT_DIR/config/user_address.txt" ]] && [[ -f "$OUTPUT_DIR/config/genesis_node.txt" ]]; then
-        printf "${GREEN}Pre-funded Account:${NC}\n"
-        printf "  Address: %s\n" "$(cat $OUTPUT_DIR/config/user_address.txt)"
-        printf "  Balance: 5000000 ETH (pre-funded)\n"
-        printf "\n"
-    fi
-
     printf "${YELLOW}Note:${NC} All services are running in background mode.\n"
     printf "Use 'ps aux | grep -E \"geth|beacon-chain|validator\"' to see running processes.\n"
 }
