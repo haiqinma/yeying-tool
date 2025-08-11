@@ -257,16 +257,9 @@ start_beacon() {
         --verbosity info"
 
     if [[ "$1" == "background" ]]; then
-        eval "$beacon_cmd" &
+        eval "$beacon_cmd" > /dev/null 2>&1 &
         echo $! >$OUTPUT_DIR/.beacon.pid
-        wait $pid
-        exit_status=$?
-        if [[ $exit_status -ne 0 ]]; then
-            log_error "Beacon Chain failed to start. Exit status: $exit_status"
-        else
-            log_info "Beacon Chain started in background (PID: $(cat $OUTPUT_DIR/.beacon.pid))"
-        fi
-
+        log_info "Beacon Chain started in background (PID: $(cat $OUTPUT_DIR/.beacon.pid))"
 
         # 等待 Beacon Chain 就绪
         wait_for_service "Beacon Chain" "curl -s http://localhost:3500/eth/v1/node/health" 120 2
@@ -307,7 +300,7 @@ stop_beacon() {
         local pid=$(cat $OUTPUT_DIR/.beacon.pid)
         if kill -0 $pid 2>/dev/null; then
             log_info "Stopping Beacon Chain (PID: $pid)..."
-            kill $pid
+            pgrep -P $pid | xargs kill
             rm -f $OUTPUT_DIR/.beacon.pid
         fi
     fi

@@ -148,18 +148,12 @@ start_geth() {
         --syncmode full \
         --maxpeers 21 \
         --log.file $OUTPUT_DIR/logs/geth.log \
-        --verbosity info"
+        --verbosity 3"
 
     if [[ "$1" == "background" ]]; then
-        eval "$geth_cmd" &
+        eval "$geth_cmd" > /dev/null 2>&1 &
         echo $! >$OUTPUT_DIR/.geth.pid
-        wait $pid
-        exit_status=$?
-        if [[ $exit_status -ne 0 ]]; then
-            log_error "Geth failed to start. Exit status: $exit_status"
-        else
-            log_info "Geth started in background (PID: $(cat $OUTPUT_DIR/.geth.pid))"
-        fi
+        log_info "Geth started in background (PID: $(cat $OUTPUT_DIR/.geth.pid))"
 
         # 等待 Geth 就绪
         wait_for_service "Geth" "curl -s -X POST -H \"Content-Type: application/json\" --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' http://localhost:8545" 120 2
@@ -196,7 +190,7 @@ stop_geth() {
         local pid=$(cat $OUTPUT_DIR/.geth.pid)
         if kill -0 $pid 2>/dev/null; then
             log_info "Stopping Geth (PID: $pid)..."
-            kill $pid
+            pgrep -P $pid | xargs kill
             rm -f $OUTPUT_DIR/.geth.pid
         fi
     fi

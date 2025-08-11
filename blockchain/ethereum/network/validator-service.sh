@@ -66,15 +66,9 @@ start_validator() {
         --verbosity info"
 
     if [[ "$1" == "background" ]]; then
-        eval "$validator_cmd" &
+        eval "$validator_cmd" > /dev/null 2>&1 &
         echo $! >$OUTPUT_DIR/.validator.pid
-        wait $pid
-        exit_status=$?
-        if [[ $exit_status -ne 0 ]]; then
-            "Validator failed to start. Exit status: $exit_status"
-        else
-            log_info "Validator started in background (PID: $(cat $OUTPUT_DIR/.validator.pid))"
-        fi
+        log_info "Validator started in background (PID: $(cat $OUTPUT_DIR/.validator.pid))"
 
         # 等待 Validator 就绪
         wait_for_service "Validator" "curl -s http://localhost:8081/metrics | grep -q validator" 30 2
@@ -95,7 +89,7 @@ stop_validator() {
         local pid=$(cat $OUTPUT_DIR/.validator.pid)
         if kill -0 $pid 2>/dev/null; then
             log_info "Stopping Validator (PID: $pid)..."
-            kill $pid
+            pgrep -P $pid | xargs kill
             rm -f $OUTPUT_DIR/.validator.pid
         fi
     fi
