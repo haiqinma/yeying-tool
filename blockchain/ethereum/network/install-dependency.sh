@@ -14,6 +14,8 @@ GETH_VERSION=v1.16.2
 PRYSM_VERSION=v6.0.3
 ETH2_VAL_TOOLS_VERSION=v0.1.1
 
+echo "proxy=${CURL_PROXY}"
+
 case $ARCH in
 x86_64) ARCH="amd64" ;;
 aarch64 | arm64) ARCH="arm64" ;;
@@ -69,7 +71,7 @@ install_python() {
     local MAJOR_VERSION=$(echo ${PYTHON_VERSION} | cut -d. -f1-2)
 
     # 检查Python是否已安装
-    if command -v python3${MAJOR_VERSION} &> /dev/null; then
+    if command -v python${MAJOR_VERSION} &> /dev/null; then
         local INSTALLED_VERSION=$(python${MAJOR_VERSION} --version 2>&1 | cut -d' ' -f2)
         printf "\033[33m[INFO]\033[0m Python ${INSTALLED_VERSION} is already installed\n"
         return 0
@@ -136,7 +138,7 @@ install_go() {
     else
         # 下载Go安装包
         echo "📦 Downloading Go ${GO_VERSION}..."
-        if ! curl -L "https://dl.google.com/go/${FILENAME}" -o "${DOWNLOAD_DIR}/${FILENAME}"; then
+        if ! curl ${CURL_PROXY} -L "https://dl.google.com/go/${FILENAME}" -o "${DOWNLOAD_DIR}/${FILENAME}"; then
             echo "❌ Failed to download Go"
             return 1
         fi
@@ -148,7 +150,7 @@ install_go() {
 
     # 解压Go安装包
     echo "📦 Extracting Go ${GO_VERSION}..."
-    if ! tar -C /usr/local -xzf "${DOWNLOAD_DIR}/${FILENAME}"; then
+    if ! sudo tar -C /usr/local -xzf "${DOWNLOAD_DIR}/${FILENAME}"; then
         echo "❌ Failed to extract Go"
         return 1
     fi
@@ -224,7 +226,7 @@ install_beacon_chain() {
     # 下载二进制文件
     BASE_URL="https://github.com/prysmaticlabs/prysm/releases/download/${PRYSM_VERSION}"
     echo "📦 Downloading beacon-chain..."
-    if curl -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
+    if curl ${CURL_PROXY} -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
         cp -f ${DOWNLOAD_DIR}/${FILENAME} ${BINARY_DIR}/beacon-chain
         chmod +x ${BINARY_DIR}/beacon-chain
         echo "✅ beacon-chain downloaded"
@@ -247,7 +249,7 @@ install_validator() {
     # 下载二进制文件
     BASE_URL="https://github.com/prysmaticlabs/prysm/releases/download/${PRYSM_VERSION}"
     echo "📦 Downloading validator..."
-    if curl -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
+    if curl ${CURL_PROXY} -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
         cp -f ${DOWNLOAD_DIR}/${FILENAME} ${BINARY_DIR}/validator
         chmod +x ${BINARY_DIR}/validator
         echo "✅ validator downloaded"
@@ -271,7 +273,7 @@ install_prysmctl() {
 
     BASE_URL="https://github.com/prysmaticlabs/prysm/releases/download/${PRYSM_VERSION}"
     echo "📦 Downloading prysmctl..."
-    if curl -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
+    if curl ${CURL_PROXY} -L "${BASE_URL}/${FILENAME}" -o ${DOWNLOAD_DIR}/${FILENAME}; then
         cp -f ${DOWNLOAD_DIR}/${FILENAME} ${BINARY_DIR}/prysmctl
         chmod +x ${BINARY_DIR}/prysmctl
         echo "✅ prysmctl downloaded"
@@ -410,12 +412,15 @@ install_eth_beacon_genesis() {
 
         # 编译
         printf "\033[32m[INFO]\033[0m Building eth-beacon-genesis...\n"
-        go build ./cmd/eth-beacon-genesis
+        go build ./cmd/eth-genesis-state-generator
         # 检查编译是否成功
-        if [[ ! -f ./eth-beacon-genesis ]]; then
+        if [[ ! -f ./eth-genesis-state-generator ]]; then
             printf "\033[31m[ERROR]\033[0m Failed to build eth-beacon-genesis\n"
             return 1
         fi
+
+        # 向后兼容
+        mv eth-genesis-state-generator eth-beacon-genesis
 
         # 复制到二进制目录
         printf "\033[32m[INFO]\033[0m Copying eth-beacon-genesis to $BINARY_DIR\n"

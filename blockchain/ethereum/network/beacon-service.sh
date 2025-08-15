@@ -236,7 +236,6 @@ start_beacon() {
         --datadir $OUTPUT_DIR/data/consensus \
         --min-sync-peers 0 \
         --genesis-state $OUTPUT_DIR/data/consensus/genesis.ssz \
-        --bootstrap-node= \
         --chain-config-file $OUTPUT_DIR/data/consensus/config.yaml \
         --contract-deployment-block 0 \
         --chain-id $CHAIN_ID \
