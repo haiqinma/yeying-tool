@@ -4,7 +4,8 @@ set -e
 
 # 导入通用配置
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source ${SCRIPT_DIR}/share/common.sh
+WORK_DIR=${SCRIPT_DIR}
+source ${WORK_DIR}/share/common.sh
 
 # 主函数
 main() {
@@ -24,15 +25,15 @@ main() {
 
     # 启动 Geth
     log_info "Starting Geth execution client..."
-    bash ${SCRIPT_DIR}/geth/geth-service.sh start background
+    bash ${WORK_DIR}/geth/geth-service.sh start background
 
     # 启动 Beacon Chain
     log_info "Starting Beacon Chain consensus client..."
-    bash ${SCRIPT_DIR}/beacon/beacon-service.sh start background
+    bash ${WORK_DIR}/beacon/beacon-service.sh start background
 
     # 启动 Validator
     log_info "Starting Validator client..."
-    bash ${SCRIPT_DIR}/validator/validator-service.sh start background
+    bash ${WORK_DIR}/validator/validator-service.sh start background
 
     # 显示状态
     show_network_status

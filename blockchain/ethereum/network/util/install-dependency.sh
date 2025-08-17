@@ -4,7 +4,7 @@ set -e
 
 # 导入通用配置
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PARENT_DIR="$(dirname "$script_dir")"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 source ${PARENT_DIR}/share/common.sh
 
 # 检测系统
