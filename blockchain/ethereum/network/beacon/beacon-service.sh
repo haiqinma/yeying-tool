@@ -248,7 +248,6 @@ start_beacon() {
         --p2p-tcp-port 13000 \
         --p2p-udp-port 12000 \
         --p2p-host-ip ${NAT_IP} \
-        --no-discovery \
         $BEACON_BOOTNODE \
         --execution-endpoint http://localhost:8551 \
         --accept-terms-of-use \
