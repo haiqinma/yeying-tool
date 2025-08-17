@@ -2,6 +2,15 @@
 
 # extract-private-key.sh - 提取以太坊账户私钥 (支持虚拟环境)
 
+# 导入通用配置
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+source ${PARENT_DIR}/share/common.sh
+
+ # 默认配置
+KEYSTORE_DIR="${OUTPUT_DIR}/accounts"
+PASSWORD_FILE="${OUTPUT_DIR}/config/password.txt"
+
 # 默认配置
 KEYSTORE_DIR="accounts"
 PASSWORD_FILE="config/password.txt"
