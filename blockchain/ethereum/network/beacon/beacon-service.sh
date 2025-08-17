@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # 导入通用配置
-source common.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$script_dir")"
+source ${PARENT_DIR}/share/common.sh
 
 # 设置 Beacon Chain 配置
 setup_beacon_config() {
@@ -138,8 +140,7 @@ REORG_MAX_EPOCHS_SINCE_FINALIZATION: 2
 # ---------------------------------------------------------------
 DEPOSIT_CHAIN_ID: ${CHAIN_ID}
 DEPOSIT_NETWORK_ID: ${CHAIN_ID}
-DEPOSIT_CONTRACT_ADDRESS: 0x4242424242424242424242424242424242424242
-
+DEPOSIT_CONTRACT_ADDRESS: 0x1234123412341234123412341234123412341234
 
 # Networking
 # ---------------------------------------------------------------

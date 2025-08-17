@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$script_dir")"
+
 # 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -10,13 +13,13 @@ NC='\033[0m' # No Color
 
 # 从env文件加载NAT_IP配置，默认为127.0.0.1
 if [ -f .env ]; then
-    source .env
+    source ${PARENT_DIR}/.env
 fi
 
 # 配置参数
 DEPLOY_HOME=${DEPLOY_HOME:-$HOME/.network}
 NETWORK_NAME=${NETWORK_NAME:-DevNet}
-CHAIN_ID=${CHAIN_ID:-5432}
+CHAIN_ID=${CHAIN_ID:-32323}
 VALIDATOR_COUNT=4
 PASSWORD=${PASSWORD:-Aa123456}
 GENESIS_DELAY=30

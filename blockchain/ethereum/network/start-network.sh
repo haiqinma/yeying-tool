@@ -3,7 +3,8 @@
 set -e
 
 # 导入通用配置
-source common.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source ${SCRIPT_DIR}/share/common.sh
 
 # 主函数
 main() {
@@ -23,15 +24,15 @@ main() {
 
     # 启动 Geth
     log_info "Starting Geth execution client..."
-    bash ./geth-service.sh start background
+    bash ${SCRIPT_DIR}/geth/geth-service.sh start background
 
     # 启动 Beacon Chain
     log_info "Starting Beacon Chain consensus client..."
-    bash ./beacon-service.sh start background
+    bash ${SCRIPT_DIR}/beacon/beacon-service.sh start background
 
     # 启动 Validator
     log_info "Starting Validator client..."
-    bash ./validator-service.sh start background
+    bash ${SCRIPT_DIR}/validator/validator-service.sh start background
 
     # 显示状态
     show_network_status
@@ -67,9 +68,9 @@ show_network_status() {
     printf "\n"
 
     printf "${CYAN}Log Files:${NC}\n"
-    printf "  Geth: logs/geth.log\n"
-    printf "  Beacon Chain: logs/beacon.log\n"
-    printf "  Validator: logs/validator.log\n"
+    printf "  Geth: ${OUTPUT_DIR}/logs/geth.log\n"
+    printf "  Beacon Chain: ${OUTPUT_DIR}/logs/beacon.log\n"
+    printf "  Validator: ${OUTPUT_DIR}/logs/validator.log\n"
     printf "\n"
 }
 
@@ -78,9 +79,10 @@ show_usage_info() {
     log_header "=== Usage Information ==="
     
     printf "${GREEN}Network Management:${NC}\n"
-    printf "  Stop network: ./scripts/stop-network.sh\n"
-    printf "  View logs: tail -f logs/geth.log\n"
-    printf "  Check status: ./scripts/status.sh\n"
+    printf "  Stop network: ./stop-network.sh\n"
+    printf "  View geth logs: tail -f ${OUTPUT_DIR}/logs/geth.log\n"
+    printf "  View beacon logs: tail -f ${OUTPUT_DIR}/logs/beacon.log\n"
+    printf "  View validator logs: tail -f ${OUTPUT_DIR}/logs/validator.log\n"
     printf "\n"
 
     printf "${GREEN}Connect to Network:${NC}\n"

@@ -3,7 +3,9 @@
 set -e
 
 # 导入通用配置
-source common.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$script_dir")"
+source ${PARENT_DIR}/share/common.sh
 
 # 检测系统
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')

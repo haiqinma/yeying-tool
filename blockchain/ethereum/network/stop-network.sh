@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # 导入通用配置
-source common.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source ${SCRIPT_DIR}/share/common.sh
 
 # 主函数
 main() {
@@ -9,15 +10,15 @@ main() {
 
     # 停止 Validator
     log_info "Stopping Validator client..."
-    bash ./validator-service.sh stop
+    bash ${SCRIPT_DIR}/validator/validator-service.sh stop
 
     # 停止 Beacon Chain
     log_info "Stopping Beacon Chain consensus client..."
-    bash ./beacon-service.sh stop
+    bash ${SCRIPT_DIR}/beacon/beacon-service.sh stop
 
     # 停止 Geth
     log_info "Stopping Geth execution client..."
-    bash ./geth-service.sh stop
+    bash ${SCRIPT_DIR}/geth/geth-service.sh stop
 
     # 强制清理残留进程
     cleanup_processes
@@ -67,9 +68,9 @@ cleanup_processes() {
 # 显示清理选项
 show_cleanup_options() {
     printf "\n${CYAN}Additional cleanup options:${NC}\n"
-    printf "  Clean all data: ./scripts/clean.sh\n"
+    printf "  Clean all data: ./config/clean.sh\n"
     printf "  Clean logs only: rm -rf logs/*\n"
-    printf "  Reset network: ./scripts/clean.sh && ./setup-config.sh\n"
+    printf "  Reset network: ./setup-config.sh\n"
     printf "\n"
 }
 

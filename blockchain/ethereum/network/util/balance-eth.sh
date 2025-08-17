@@ -93,8 +93,10 @@ format_eth() {
         return
     fi
     
-    # 保留6位小数，移除尾随零
-    printf "%.6f" "$eth_value" | sed 's/\.0*$//' | sed 's/0*$//' | sed 's/\.$//'
+    # 使用bc进行精确计算，保留6位小数
+    formatted_value=$(echo "scale=6; $eth_value / 1" | bc)
+    # 移除尾随零
+    echo "$formatted_value" | sed -E 's/\.?0+$//'
 }
 
 # 获取余额
@@ -177,8 +179,8 @@ main() {
     # 显示结果
     echo ""
     echo -e "${GREEN}余额: $formatted_eth ETH${NC}"
-    echo "Wei: $balance_wei"
-    echo "Hex: $balance_hex"
+    # echo "Wei: $balance_wei"
+    # echo "Hex: $balance_hex"
 }
 
 # 运行主函数

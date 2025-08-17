@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # 导入通用配置
-source common.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$script_dir")"
+source ${PARENT_DIR}/share/common.sh
 
 # 设置 Validator 配置
 setup_validator_config() {
@@ -11,7 +13,7 @@ setup_validator_config() {
     MNEMONICS=$(get_node_mnemonics)
 
     # 检查验证者密钥是否存在
-    if [[ ! -d "$OUTPUT_DIR/data/validator/wallet" ]] || [[ -z "$(ls -A $OUTPUT_DIR/data/validator/wallet 2>/dev/null)" ]]; then
+    if [[ ! -d "$OUTPUT_DIR/data/validator/keys/prysm" ]] || [[ -z "$(ls -A $OUTPUT_DIR/data/validator/keys/prysm 2>/dev/null)" ]]; then
         log_info "Prysm validator not configured, setting up now..."
         generate_validator_keys
     fi
@@ -28,16 +30,6 @@ generate_validator_keys() {
         --out-loc $OUTPUT_DIR/data/validator/keys \
         --prysm-pass "${PASSWORD}" \
         --insecure
-
-    log_info "Checking validator keys..."
-
-    mv $OUTPUT_DIR/data/validator/keys/prysm $OUTPUT_DIR/data/validator/wallet
-
-    # 验证密钥导入
-    validator accounts list \
-        --wallet-password-file $OUTPUT_DIR/config/password.txt \
-        --wallet-dir $OUTPUT_DIR/data/validator/wallet \
-        --accept-terms-of-use
 
     log_info "Validator keys setup completed!"
 }
@@ -57,7 +49,7 @@ start_validator() {
     local validator_cmd="validator \
         --datadir $OUTPUT_DIR/data/validator \
         --accept-terms-of-use \
-        --wallet-dir $OUTPUT_DIR/data/validator/wallet \
+        --wallet-dir $OUTPUT_DIR/data/validator/keys/prysm \
         --wallet-password-file $OUTPUT_DIR/config/password.txt \
         --chain-config-file $OUTPUT_DIR/data/consensus/config.yaml \
         --beacon-rpc-provider localhost:4000 \
