@@ -25,8 +25,8 @@ generate_validator_keys() {
 
     eth2-val-tools keystores \
         --source-mnemonic "${MNEMONICS}" \
-        --source-min 0 \
-        --source-max 4 \
+        --source-min ${VALIDATOR_START_INDEX} \
+        --source-max ${VALIDATOR_END_INDEX} \
         --out-loc $OUTPUT_DIR/data/validator/keys \
         --prysm-pass "${PASSWORD}" \
         --insecure
