@@ -1,0 +1,33 @@
+services:
+  graph-node:
+    image: graphprotocol/graph-node:v0.40.0
+    container_name: graph-node
+    ports:
+      - '8000:8000'
+      - '8001:8001'
+      - '8020:8020'
+      - '8030:8030'
+      - '8040:8040'
+    environment:
+      postgres_host: postgres
+      postgres_user: postgres
+      postgres_pass: postgres
+      postgres_db: graph-node
+      ipfs: 'ipfs:5001'
+      ethereum: 'https://devnet.ppaix.com'
+      GRAPH_LOG: info
+      RUST_LOG: info
+    networks:
+      - graph-node-network
+      - psql-network
+      - ipfs-network
+networks:
+  graph-node-network:
+    name: "graph-node-network"
+    driver: bridge
+  psql-network:
+    external: true
+    name: psql-network
+  ipfs-network:
+    external: true
+    name: ipfs-network
