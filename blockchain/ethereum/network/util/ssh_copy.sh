@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# 导入通用配置
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+source ${PARENT_DIR}/share/common.sh
+
 # 基础配置
-SOURCE_BASE="/data/devnet"
-TARGET_BASE="/data/devnet"
+SOURCE_BASE=${OUTPUT_DIR}
+TARGET_BASE=${OUTPUT_DIR}
 USER="root"
 
 # 目标服务器数组 - 添加更多IP只需在此处添加
