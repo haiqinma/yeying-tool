@@ -229,8 +229,8 @@ start_beacon() {
     fi
 
     BEACON_BOOTNODE=""
-    if [[ -f "$OUTPUT_DIR/config/beacon_enr.txt" ]] && [[ ! -f "$OUTPUT_DIR/config/genesis_node.txt" ]]; then
-        BEACON_BOOTNODE="--bootstrap-node $(cat $OUTPUT_DIR/config/beacon_enr.txt)"
+    if [[ -f "$OUTPUT_DIR/config/beacon_bootnode.txt" ]]; then
+        BEACON_BOOTNODE="--bootstrap-node $(cat $OUTPUT_DIR/config/beacon_bootnode.txt)"
     fi
 
     local beacon_cmd="beacon-chain \

@@ -60,7 +60,7 @@ create_execution_genesis() {
     # 生成统一的时间戳
     local GENESIS_TIMESTAMP=$(cat $OUTPUT_DIR/config/genesis_timestamp.txt)
     local GENESIS_TIMESTAMP_HEX=$(printf "0x%x" $GENESIS_TIMESTAMP)
-    echo "1" >$OUTPUT_DIR/config/genesis_node.txt
+
     cat >$OUTPUT_DIR/data/execution/genesis.json <<EOF
 {
   "config": {
@@ -129,8 +129,8 @@ start_geth() {
     setup_geth_config
 
     BOOTNODE_ENODE=""
-    if [[ -f "$OUTPUT_DIR/config/enode.txt"  ]] && [[ ! -f "$OUTPUT_DIR/config/genesis_node.txt" ]]; then
-        BOOTNODE_ENODE="--bootnodes $(cat $OUTPUT_DIR/config/enode.txt)"
+    if [[ -f "$OUTPUT_DIR/config/geth_bootnode.txt"  ]]; then
+        BOOTNODE_ENODE="--bootnodes $(cat $OUTPUT_DIR/config/get_bootnode.txt)"
     fi
 
     local geth_cmd="geth \
