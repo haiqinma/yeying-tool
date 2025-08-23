@@ -1,15 +1,23 @@
-安装依赖？
+部署
 
-执行./install_dependency.sh
+1.安装docker、python3.12、go、node24等工具, 执行如下命令：
 
-Docker
-Python3.12
-Go
-Node24
 
-注意，安装完依赖以后，执行命令source ~/.bashrc 或者 source ~/.zshrc，确保环境变量生效
+./install_dependency.sh
 
-如何部署eth2？
+注意，安装完依赖以后，执行命令source ~/.bashrc 或者 source ~/.zshrc，确保环境变量生效。
+
+2.拷贝 .env.template 到 .env 根据需要修改里面的参数，然后如下执行命令，如果之前部署过，这个命令会清理掉之前的数据。
+
+./config/setup-config.sh
+
+3.启动网络节点，包括geth、beacon、validator服务，执行如下命令:
+
+./start-network.sh
+
+
+
+讲解以太坊网络节点的部署流程:
 
 部署创世节点
 
