@@ -11,9 +11,11 @@ source ${PARENT_DIR}/share/common.sh
 KEYSTORE_DIR="${OUTPUT_DIR}/accounts"
 PASSWORD_FILE="${OUTPUT_DIR}/config/password.txt"
 
+# 读取账户地址
+USER_ADDRESS=$(get_user_address)
+echo "user address=${USER_ADDRESS}"
+
 # 默认配置
-KEYSTORE_DIR="accounts"
-PASSWORD_FILE="config/password.txt"
 VENV_DIR="/tmp/.venv"
 
 # 颜色定义
