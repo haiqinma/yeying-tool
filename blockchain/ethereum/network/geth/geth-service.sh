@@ -130,7 +130,7 @@ start_geth() {
 
     BOOTNODE_ENODE=""
     if [[ -f "$OUTPUT_DIR/config/geth_bootnode.txt"  ]]; then
-        BOOTNODE_ENODE="--bootnodes $(cat $OUTPUT_DIR/config/get_bootnode.txt)"
+        BOOTNODE_ENODE="--bootnodes $(cat $OUTPUT_DIR/config/geth_bootnode.txt)"
     fi
 
     local geth_cmd="geth \

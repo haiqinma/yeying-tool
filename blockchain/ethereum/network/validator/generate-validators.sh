@@ -7,12 +7,13 @@ fi
 
 START=$1
 END=$2
-EXPORT_DIR=/tmp
 
 # 导入通用配置
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 source ${PARENT_DIR}/share/common.sh
+
+EXPORT_DIR=$OUTPUT_DIR/config/key_${VALIDATOR_START_INDEX}_${VALIDATOR_END_INDEX}
 
 MNEMONICS=$(get_node_mnemonics)
 

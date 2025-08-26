@@ -10,10 +10,8 @@ SOURCE_BASE=${OUTPUT_DIR}
 TARGET_BASE=${OUTPUT_DIR}
 USER="root"
 
-# 目标服务器数组 - 添加更多IP只需在此处添加
-TARGETS=(
-  # 可以添加更多目标服务器，例如:
-)
+# 解析成数组
+IFS=',' read -ra TARGETS <<< "$COPY_ADDRESS"
 
 # 文件映射数组 - 格式: "源文件路径:目标文件路径"
 # 源路径和目标路径都是相对于BASE_DIR的
@@ -29,8 +27,8 @@ FILES=(
   "data/consensus/genesis.ssz:data/consensus/genesis.ssz"
   "data/consensus/config.yaml:data/consensus/config.yaml"
 
-  # 可以添加更多文件，例如:
-  # "config/custom.txt:config/custom.txt"
+  # keys目录
+  "config/key_${VALIDATOR_START_INDEX}_${VALIDATOR_END_INDEX}/keys:data/validator"
 )
 
 # 颜色定义
@@ -50,9 +48,9 @@ copy_file() {
   local target="$2"
   local target_host="$3"
 
-  echo -n "复制 $(basename "$source") 到 $target_host... "
+  echo -n "从 $target_host 复制 $(basename "$source") 到本地... "
 
-  scp "$source" "${USER}@${target_host}:${target}" > /dev/null 2>&1
+  scp -r "${USER}@${target_host}:${source}" "$target" > /dev/null 2>&1
 
   if [ $? -eq 0 ]; then
     echo -e "${GREEN}成功${NC}"
@@ -63,12 +61,11 @@ copy_file() {
   fi
 }
 
-# 确保目标目录存在
+# 确保本地目录存在
 ensure_dir() {
   local dir="$1"
-  local target_host="$2"
 
-  ssh "${USER}@${target_host}" "mkdir -p $dir" > /dev/null 2>&1
+  mkdir -p "$dir"
 }
 
 # 主函数
@@ -82,19 +79,29 @@ main() {
 
   # 遍历所有目标服务器
   for target_host in "${TARGETS[@]}"; do
-    print_section "复制到服务器: $target_host"
+    print_section "从服务器: $target_host 复制"
     # 遍历所有文件
     for file_mapping in "${FILES[@]}"; do
       # 分割源路径和目标路径
       IFS=':' read -r source_path target_path <<< "$file_mapping"
 
       # 构建完整路径
-      full_source="${SOURCE_BASE}/${source_path}"
-      full_target="${TARGET_BASE}/${target_path}"
+      if [[ "$source_path" == /* ]]; then
+        full_source="${source_path}"
+      else
+        full_source="${SOURCE_BASE}/${source_path}"
+      fi
 
-      # 确保目标目录存在
+
+      if [[ "$target_path" == /* ]]; then
+        full_target="${target_path}"
+      else
+        full_target="${TARGET_BASE}/${target_path}"
+      fi
+
+      # 确保本地目录存在
       target_dir=$(dirname "$full_target")
-      ensure_dir "$target_dir" "$target_host"
+      ensure_dir "$target_dir"
 
       # 复制文件
       if copy_file "$full_source" "$full_target" "$target_host"; then
