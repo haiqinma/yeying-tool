@@ -144,13 +144,13 @@ start_geth() {
         $BOOTNODE_ENODE \
         --http \
         --http.vhosts="*" \
-        --http.api eth,net,web3,engine,txpool \
+        --http.api eth,net,web3,engine,debug,trace,txpool \
         --http.addr 0.0.0.0 \
         --http.port 8545 \
         --http.corsdomain \"*\" \
         --http.vhosts \"*\" \
         --ws \
-        --ws.api eth,net,web3,engine,txpool \
+        --ws.api eth,net,web3,engine,debug,trace,txpool \
         --ws.addr 0.0.0.0 \
         --ws.port 8546 \
         --ws.origins \"*\" \

@@ -17,8 +17,8 @@ IFS=',' read -ra TARGETS <<< "$COPY_ADDRESS"
 # 源路径和目标路径都是相对于BASE_DIR的
 FILES=(
   # 配置文件
-  "config/beacon_enr.txt:config/beacon_enr.txt"
-  "config/enode.txt:config/enode.txt"
+  "config/beacon_enr.txt:config/beacon_bootnode.txt"
+  "config/enode.txt:config/geth_bootnode.txt"
 
   # 执行层文件
   "data/execution/genesis.json:data/execution/genesis.json"
