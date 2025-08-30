@@ -1,17 +1,12 @@
-参考 [官网](https://docs.docker.com/engine/install/)，国内安装脚本：setup.sh
+参考 [官网](https://docs.docker.com/engine/install/)
 
-```bash
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg lsb-release
+1. 设置docker仓库：
 
-sudo mkdir -p /etc/apt/keyrings
+国内：./setup_aliyun.sh
 
-curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+国外：./setup_official.sh
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://mirrors.aliyun.com/docker-ce/linux/ubuntu \
-  $(lsb_release -cs) stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt-get update
-```
+2. 执行安装命令：
+
+./install.sh
