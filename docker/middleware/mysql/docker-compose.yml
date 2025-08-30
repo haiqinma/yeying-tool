@@ -3,7 +3,7 @@ services:
     image: mysql:8.4
     container_name: mysql
     env_file:
-      - .env  # 加载 .env 文件中的环境变量
+      - .env
     volumes:
       - ./data:/var/lib/mysql/
       - ./init.db:/docker-entrypoint-initdb.d

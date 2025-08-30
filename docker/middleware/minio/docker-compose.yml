@@ -3,10 +3,8 @@ services:
     image: minio/minio:latest
     container_name: minio
     restart: always
-    environment:
-      TZ: Asia/Shanghai
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: kHNBU09#O;*@
+    env_file:
+      - .env
     command: server /data --console-address ":9011"
     ports:
       - "9000:9000"
