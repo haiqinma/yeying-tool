@@ -5,6 +5,12 @@
 2. 执行命令：docker compose up -d
 
 
+使用nginx代理Web和API的方法：
+
+1. 使用location /web/ 和 location / 来区分，前面的location代理web端访问，后面的location代理API访问
+2. 启动容器配置环境变量MINIO_BROWSER_REDIRECT_URL=<url>/web
+
+
 如何测试？
 
 1. python3 -m venv venv
