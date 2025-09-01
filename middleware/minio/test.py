@@ -13,8 +13,8 @@ def test_minio_connection():
     # MinIO连接配置
     client = Minio(
         os.getenv("DOMAIN"),
-        access_key=os.getenv("MINIO_ROOT_USER"),
-        secret_key=os.getenv("MINIO_ROOT_PASSWORD"),
+        access_key=os.getenv("ACCESS_KEY"),
+        secret_key=os.getenv("SECRET_KEY"),
         secure=os.getenv("TLS")
     )
 
