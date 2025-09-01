@@ -2,3 +2,7 @@ output/
 .idea
 .env
 .DS_Store
+openapitools.json
+script/typescript/apidocs.openapi.json
+*.tar.gz
+apidocs.openapi.json
