@@ -1,4 +1,15 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 从env文件加载配置
+if [ -f .env ]; then
+    source ${SCRIPT_DIR}/.env
+fi
+
+CLUSTER_ID=${CLUSTER_ID:-3302}
+PUBSUB_TOPIC=/waku/2/rs/${CLUSTER_ID}/0
+BOOTNODE=${BOOTNODE}
+NAT_IP=${NAT_IP}
 
 # 定义变量
 WAKU_EXEC="./build/waku"
@@ -32,12 +43,17 @@ if [ -f "$PID_FILE" ]; then
   fi
 fi
 
+STATIC_NODE=""
+if [ -z ${BOOTNODE} ];  then
+   STATIC_NODE="--staticnode=${BOOTNODE}"
+fi
+
 # 启动新的进程
 $WAKU_EXEC \
   --log-encoding=nocolor \
   --log-output=file:$LOG_FILE \
   --log-level=INFO \
-  --cluster-id=5432 \
+  --cluster-id=$CLUSTER_ID \
   --peer-store-capacity=10 \
   --persist-peers \
   --key-file=./nodekey \
@@ -47,13 +63,13 @@ $WAKU_EXEC \
   --rest-port=8646 \
   --rest-address=0.0.0.0 \
   --rest-admin \
-  --staticnode=<BOOTNODE ADDRESS> \
+  ${STATIC_NODE} \
   --relay \
   --store \
   --filter \
   --lightpush \
-  --pubsub-topic=/waku/2/rs/5432/0 \
-  --ext-ip=<Your External IP> &
+  --pubsub-topic=$PUBSUB_TOPIC \
+  --ext-ip=$NAT_IP &
 
 # 获取新进程的 PID
 NEW_PID=$!

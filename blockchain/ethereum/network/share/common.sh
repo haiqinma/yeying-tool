@@ -11,7 +11,7 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# 从env文件加载NAT_IP配置，默认为127.0.0.1
+# 从env文件加载配置
 if [ -f .env ]; then
     source ${PARENT_DIR}/.env
 fi

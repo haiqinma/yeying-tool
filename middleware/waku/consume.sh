@@ -1,11 +1,21 @@
+#!/bin/bash
 
-TOPIC=/waku/2/rs/5432/0
-CURL=http://127.0.0.1:8646
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-ENCODED_TOPIC=$(echo -n "$TOPIC" | jq -sRr @uri)
+# 从env文件加载配置
+if [ -f .env ]; then
+    source ${SCRIPT_DIR}/.env
+fi
+
+WAKU_URL=${WAKU_URL:-http://127.0.0.1:8646}
+CLUSTER_ID=${CLUSTER_ID:-3302}
+PUBSUB_TOPIC=/waku/2/rs/${CLUSTER_ID}/0
+
+
+ENCODED_TOPIC=$(echo -n "$PUBSUB_TOPIC" | jq -sRr @uri)
 
 while true; do
-  RESP=$(curl -s -X GET "${CURL}/relay/v1/messages/${ENCODED_TOPIC}")
+  RESP=$(curl -s -X GET "${WAKU_URL}/relay/v1/messages/${ENCODED_TOPIC}")
   # 检查 RESP 是否为有效的 JSON 数组
   if [[ -z "$RESP" || "$RESP" == "null" ]]; then
     echo "无消息"
