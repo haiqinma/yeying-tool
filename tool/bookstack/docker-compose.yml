@@ -1,0 +1,13 @@
+---
+services:
+  bookstack:
+    image: linuxserver/bookstack:25.07.2
+    container_name: bookstack
+    env_file:
+      - .env
+    volumes:
+      - ./data:/config
+    ports:
+      - 6875:80
+    restart: unless-stopped
+
