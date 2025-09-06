@@ -4,9 +4,9 @@
 
 1. 设置ubuntu docker仓库：
 
-国内：./setup_aliyun.sh
+国内机器执行命令：./setup_aliyun.sh
 
-国外：./setup_ubuntu.sh
+国外机器执行命令：./setup_ubuntu.sh
 
 
 2. 执行安装命令：
