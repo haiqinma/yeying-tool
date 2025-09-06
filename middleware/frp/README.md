@@ -79,3 +79,7 @@ ExecStart = /usr/local/frp-<代理端口>/frpc -c /usr/local/frp-<代理端口>/
 
 [Install]
 WantedBy = multi-user.target
+
+
+<last>
+将上述配置的服务启动、验证、配置开机启动。
