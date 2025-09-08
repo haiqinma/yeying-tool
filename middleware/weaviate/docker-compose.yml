@@ -3,6 +3,7 @@ services:
     image: semitechnologies/weaviate:1.32.5
     ports:
       - "8080:8080"
+      - "50051:50051"
     volumes:
       - ./data:/var/lib/weaviate
     environment:
