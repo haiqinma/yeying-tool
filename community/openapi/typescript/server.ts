@@ -50,81 +50,81 @@ import warehouse from './impl/warehouse'
 import swaggerUi from 'swagger-ui-express'
 import * as fs from 'fs';
 import * as path from 'path';
-import { DatabaseConfig, GrpcConfig, ServerConfig } from './config';
-import { DataSourceBuilder } from './infrastructure/db';
+//import { DatabaseConfig, GrpcConfig, ServerConfig } from './config';
+//import { DataSourceBuilder } from './infrastructure/db';
 import { existsSync, readFileSync } from 'fs'
-import { IdentityService } from './domain/service/identity'
-import { Authenticate } from './common/authenticate'
-import {
-    ApplicationDO,
-    CardDO,
-    CertificateDO,
-    EventDO,
-    InvitationDO,
-    ServiceDO,
-    SolutionDO,
-    SupportDO,
-    UserDO,
-    UserStateDO,
-    AuditDO,
-    CommentDO
-} from './domain/mapper/entity'
-import config2 from 'config'
-import { SingletonDataSource } from './domain/facade/datasource';
-import { LoggerConfig, LoggerService } from './infrastructure/logger';
-import { convertServiceMetadataFromIdentity, signServiceMetadata } from './application/model/service';
-import { SingletonAuthenticate } from './domain/facade/authenticate';
+//import { IdentityService } from './domain/service/identity'
+//import { Authenticate } from './common/authenticate'
+//import {
+//    ApplicationDO,
+//    CardDO,
+//    CertificateDO,
+//    EventDO,
+//    InvitationDO,
+//    ServiceDO,
+//    SolutionDO,
+//    SupportDO,
+//    UserDO,
+//    UserStateDO,
+//    AuditDO,
+//    CommentDO
+//} from './domain/mapper/entity'
+//import config2 from 'config'
+//import { SingletonDataSource } from './domain/facade/datasource';
+//import { LoggerConfig, LoggerService } from './infrastructure/logger';
+//import { convertServiceMetadataFromIdentity, signServiceMetadata } from './application/model/service';
+//import { SingletonAuthenticate } from './domain/facade/authenticate';
 
-const workDir = process.cwd()
+//const workDir = process.cwd()
 
 // 初始化日志
-new LoggerService(config2.get<LoggerConfig>('logger')).initialize()
+//new LoggerService(config2.get<LoggerConfig>('logger')).initialize()
 
-const serverConfig: ServerConfig = config2.get<ServerConfig>('server')
-const grpcConfig: GrpcConfig = serverConfig.grpc
+//const serverConfig: ServerConfig = config2.get<ServerConfig>('server')
+//const grpcConfig: GrpcConfig = serverConfig.grpc
 
 // 加载身份
-const identityFile = path.join(workDir, `node.id`)
-const passwordFile = process.argv[2]
-const grpcPort = process.argv.length >= 4 ? <number>(<unknown>process.argv[3]) : grpcConfig.port
+//const identityFile = path.join(workDir, `node.id`)
+//const passwordFile = process.argv[2]
+//const grpcPort = process.argv.length >= 4 ? <number>(<unknown>process.argv[3]) : grpcConfig.port
 
-console.log(`Use password file=${passwordFile}`)
-console.log(`Use identity file=${identityFile}`)
+//console.log(`Use password file=${passwordFile}`)
+//console.log(`Use identity file=${identityFile}`)
 // 确保文件路径被提供
-if (!passwordFile || !existsSync(passwordFile)) {
-    console.error('Please input the password firstly！')
-    process.exit(1)
-}
+//if (!passwordFile || !existsSync(passwordFile)) {
+//    console.error('Please input the password firstly！')
+//    process.exit(1)
+//}
 
-const identityService = new IdentityService()
+//const identityService = new IdentityService()
 
 // 初始化数据库
-const databaseConfig: DatabaseConfig = config2.get<DatabaseConfig>('database')
-const builder = new DataSourceBuilder(databaseConfig)
-builder.entities([
-    UserStateDO,
-    UserDO,
-    ServiceDO,
-    ApplicationDO,
-    SupportDO,
-    SolutionDO,
-    EventDO,
-    CertificateDO,
-    InvitationDO,
-    CardDO,
-    AuditDO,
-    CommentDO
-])
+//const databaseConfig: DatabaseConfig = config2.get<DatabaseConfig>('database')
+//const builder = new DataSourceBuilder(databaseConfig)
+//builder.entities([
+//    UserStateDO,
+//    UserDO,
+//    ServiceDO,
+//    ApplicationDO,
+//    SupportDO,
+//    SolutionDO,
+//    EventDO,
+//    CertificateDO,
+//    InvitationDO,
+//    CardDO,
+//    AuditDO,
+//    CommentDO
+//])
 
-builder.build().initialize().then((conn) => {
+//builder.build().initialize().then((conn) => {
     // 注册数据库连接
-    SingletonDataSource.set(conn)
-    console.log('The database has been initialized.')
-    initializeIdentity(passwordFile, identityFile).then(async (o) => {
-        const authenticate = new Authenticate(o.blockAddress)
+//    SingletonDataSource.set(conn)
+//    console.log('The database has been initialized.')
+//    initializeIdentity(passwordFile, identityFile).then(async (o) => {
+//        const authenticate = new Authenticate(o.blockAddress)
         // 注册身份认证对象
-        SingletonAuthenticate.set(authenticate)
-        console.log('The authenticate has been initialized.')
+//        SingletonAuthenticate.set(authenticate)
+//        console.log('The authenticate has been initialized.')
         // 创建 Express 应用
         const app = express();
 
@@ -193,32 +193,33 @@ builder.build().initialize().then((conn) => {
         api(app, impl);
 
         // 启动服务器
-        app.listen(grpcPort, '0.0.0.0', () => {
-        console.log(`🚀 Server is running on http://localhost:${grpcPort}`);
+        const port = 8080
+        app.listen(port, '0.0.0.0', () => {
+            console.log(`🚀 Server is running on http://localhost:${port}`);
         });
-    }).catch(error => console.log("Authenticate init failed", error))
+ //   }).catch(error => console.log("Authenticate init failed", error))
 
-}).catch(error => console.log("Database connection failed", error))
+//}).catch(error => console.log("Database connection failed", error))
 
 
 
-async function initializeIdentity(passwordFile: string, identityFile: string) {
-    const password = readFileSync(passwordFile, 'utf-8')
-    const identity = await identityService.load(identityFile)
-    if (identity.securityConfig === undefined || identity.securityConfig.algorithm === undefined) {
-        throw new Error("identity.securityConfig or identity.securityConfig.algorithm is undefined")
-    }
-    const blockAddress = await identityService.decryptBlockAddress(
-        identity.blockAddress,
-        identity.securityConfig.algorithm,
-        password
-    )
+//async function initializeIdentity(passwordFile: string, identityFile: string) {
+//   const password = readFileSync(passwordFile, 'utf-8')
+//    const identity = await identityService.load(identityFile)
+//    if (identity.securityConfig === undefined || identity.securityConfig.algorithm === undefined) {
+//        throw new Error("identity.securityConfig or identity.securityConfig.algorithm is undefined")
+//    }
+//    const blockAddress = await identityService.decryptBlockAddress(
+//        identity.blockAddress,
+//        identity.securityConfig.algorithm,
+//        password
+//    )
 
-    const service = convertServiceMetadataFromIdentity(identity)
-    await signServiceMetadata(blockAddress.privateKey, service)
-    return {
-        identity: identity,
-        blockAddress: blockAddress,
-        service: service
-    }
-}
+//    const service = convertServiceMetadataFromIdentity(identity)
+//    await signServiceMetadata(blockAddress.privateKey, service)
+//    return {
+//        identity: identity,
+//        blockAddress: blockAddress,
+//        service: service
+//    }
+//}

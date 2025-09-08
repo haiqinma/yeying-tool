@@ -35,11 +35,11 @@ protoc -I ../yeying-idl \
 swagger2openapi apidocs.swagger.json -o apidocs.openapi.json
 rm -f apidocs.swagger.json
 cp apidocs.openapi.json "$output_path"/apidocs.openapi.json
-cp apidocs.openapi.json script/typescript//apidocs.openapi.json
+cp apidocs.openapi.json community/openapi/typescript/apidocs.openapi.json
 
 # 生成 typescript-express 脚手架
 echo "初始化 typescript-express 工程"
-cp script/typescript/package.json "$output_path"/
+cp community/openapi/typescript/package.json "$output_path"/
 
 dir_name=$(basename "$output_path")
 sed -i '' "s/\${sdk_name}/$dir_name/g" "$output_path/package.json"
@@ -51,12 +51,14 @@ npm install express
 npm install --save-dev typescript ts-node @types/express @types/node nodemon
 npm install @openapi-generator-plus/typescript-express-passport-server-generator
 npm install -g openapi-generator-plus
-openapi-generator-plus -c "$current_dir/script/typescript/config.yaml"
+openapi-generator-plus -c "$current_dir/community/openapi/typescript/config.yaml"
 cd "$current_dir"
 pwd
-mv script/typescript/src "$output_path/"
-cp script/typescript/tsconfig.json "$output_path/tsconfig.json"
-cp script/typescript/server.ts "$output_path/src/server.ts"
+mv community/openapi/typescript/src "$output_path/"
+cp community/openapi/typescript/tsconfig.json "$output_path/tsconfig.json"
+cp community/openapi/typescript/server.ts "$output_path/src/server.ts"
+cp community/openapi/typescript/README.md "$output_path/README.md"
+cp community/openapi/typescript/runner.sh "$output_path/runner.sh"
 pwd
 
 cd "$output_path"

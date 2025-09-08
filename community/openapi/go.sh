@@ -1,19 +1,19 @@
-echo "Python 脚手架"
-echo "根据 yeying-idl 初始化 Flask 工程"
+echo "Go 脚手架"
+echo "根据 yeying-idl 初始化 go-gin-server 工程"
 set -x
 current_dir=$(pwd)
 output_path=$1
 if [ -z "$output_path" ]; then
-    echo "生成错误，Flask工程目录不能为空"
+    echo "生成错误，go-gin-server工程目录不能为空"
     exit 1
 else
-    echo "您的Flask工程目录为: $output_path"
+    echo "您的go-gin-server工程目录为: $output_path"
 fi
 if [ -d "$output_path" ]; then
-    echo "生成错误，$output_path 该目录已存在，请重新指定Flask工程目录"
+    echo "生成错误，$output_path 该目录已存在，请重新指定go-gin-server工程目录"
     exit 1
 else
-    echo "开始生成Flask工程"
+    echo "开始生成go-gin-server工程"
     mkdir -p "$output_path"
 fi
 
@@ -36,26 +36,23 @@ swagger2openapi apidocs.swagger.json -o apidocs.openapi.json
 rm -f apidocs.swagger.json
 mv apidocs.openapi.json "$output_path"/apidocs.openapi.json
 
-# 生成 Flask 脚手架
+# 生成 go-gin-server 脚手架
 npm install -g @openapitools/openapi-generator-cli
 openapi-generator-cli version
-dir_name=$(basename "$output_path")
+
 export OPENAPI_GENERATOR_CLI_MIRROR=https://maven.aliyun.com/repository/public
 openapi-generator-cli generate \
   -i "$output_path"/apidocs.openapi.json \
-  -g python-flask \
-  -o "$output_path" \
-  --additional-properties=generatorVersion=7.14.0,projectName="$dir_name",packageVersion=0.1.0,packageName="$dir_name",supportPython2=false,serverPort=5000,apiPackage=apis,modelPackage=models,hideGenerationTimestamp=true,useConnexionMiddleware=true
-
+  -g go-gin-server \
+  -o "$output_path"
 cd "$current_dir"
 pwd
-cp community/openapi/python/README.md "$output_path/README.md"
-cp community/openapi/python/runner.sh "$output_path/runner.sh"
-cp community/openapi/python/__main__.py "$output_path/__main__.py"
+cp community/openapi/go/main.go "$output_path/main.go"
+cp community/openapi/go/README.md "$output_path/README.md"
+cp community/openapi/go/runner.sh "$output_path/runner.sh"
 pwd
-
 tar -zcf "$output_path".tar.gz "$output_path"
 #rm -rf "$output_path"
 echo "$output_path".tar.gz
-echo "生成的Flask工程路径：$output_path；请解压后使用"
+echo "生成的go-gin-server工程路径：$output_path；请解压后使用"
 set +x

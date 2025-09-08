@@ -1,7 +1,7 @@
 echo "Java 脚手架"
-echo "根据 yeying-idl 初始化 springboot 工程"
+echo "根据 yeying-idl 初始化 spring-boot 工程"
 set -x
-
+current_dir=$(pwd)
 output_path=$1
 if [ -z "$output_path" ]; then
     echo "生成错误，spring-boot工程目录不能为空"
@@ -36,7 +36,7 @@ swagger2openapi apidocs.swagger.json -o apidocs.openapi.json
 rm -f apidocs.swagger.json
 mv apidocs.openapi.json "$output_path"/apidocs.openapi.json
 
-# 生成 springboot 脚手架
+# 生成 spring-boot 脚手架
 npm install -g @openapitools/openapi-generator-cli
 openapi-generator-cli version
 
@@ -49,9 +49,13 @@ openapi-generator-cli generate \
 
 # 修改 java 版本到23
 sed -i '' 's|<java.version>17</java.version>|<java.version>23</java.version>|g' "$output_path"/pom.xml
-# 修改 springboot 版本 3.5.0
+# 修改 spring-boot 版本 3.5.0
 sed -i '' '/<parent>/,/<\/parent>/ s|<version>3.1.3</version>|<version>3.5.0</version>|' "$output_path"/pom.xml
-
+cd "$current_dir"
+pwd
+cp community/openapi/java/README.md "$output_path/README.md"
+cp community/openapi/java/runner.sh "$output_path/runner.sh"
+pwd
 tar -zcf "$output_path".tar.gz "$output_path"
 #rm -rf "$output_path"
 echo "$output_path".tar.gz
