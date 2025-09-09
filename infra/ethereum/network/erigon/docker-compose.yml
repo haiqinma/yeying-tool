@@ -8,8 +8,8 @@ services:
       - "30303:30303"  # P2P 端口
       - "30303:30303/udp"
     volumes:
-      - ${DATADIR}/erigon:/home/erigon/.local/share/erigon
-      - ${DATADIR}/genesis.json:/genesis.json
+      - ${DATADIR}/data/execution/erigon:/home/erigon/.local/share/erigon
+      - ${DATADIR}/data/execution/genesis.json:/genesis.json
     environment:
       - ERIGON_DATADIR=/home/erigon/.local/share/erigon
     entrypoint: ["/bin/sh", "-c"]
@@ -33,6 +33,10 @@ services:
         --http.api=eth,net,web3,trace,txpool,erigon,parity \\
         --ws \\
         --ws.port=8546 \\
+        --authrpc.addr=0.0.0.0 \\
+        --authrpc.port=8551 \\
+        --authrpc.vhosts='*' \\
+        --authrpc.jwtsecret=${DATADIR}/config/jwt.hex \\
         --port=30303 \\
         --nat=extip:${NAT_IP} \\
         --log.console.verbosity=info \\
