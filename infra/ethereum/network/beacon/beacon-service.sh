@@ -10,7 +10,7 @@ setup_beacon_config() {
     log_info "Setting up Beacon Chain configuration..."
 
     # 检查基础配置是否存在
-    if [[ ! -d "$OUTPUT_DIR/data/execution/geth" ]]; then
+    if [[ ! -d "$OUTPUT_DIR/data/execution/geth" && ! -d "$OUTPUT_DIR/data/execution/erigon" ]]; then
         log_error "Get datadir not found. Please run Geth setup first."
         exit 1
     fi
