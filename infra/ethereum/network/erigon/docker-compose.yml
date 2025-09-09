@@ -1,0 +1,45 @@
+services:
+  erigon:
+    image: erigontech/erigon:v3.0.16
+    container_name: erigon
+    ports:
+      - "8545:8545"    # HTTP RPC
+      - "8546:8546"    # WebSocket
+      - "30303:30303"  # P2P 端口
+      - "30303:30303/udp"
+    volumes:
+      - ${DATADIR}/erigon:/home/erigon/.local/share/erigon
+      - ${DATADIR}/genesis.json:/genesis.json
+    environment:
+      - ERIGON_DATADIR=/home/erigon/.local/share/erigon
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      # 检查是否已经初始化
+      if [ ! -f /home/erigon/.local/share/erigon/chaindata/CURRENT ]; then
+        echo 'Initializing Erigon with genesis...'
+        erigon init --datadir=/home/erigon/.local/share/erigon /genesis.json
+      fi
+
+      # 启动 Erigon 节点
+      erigon \\
+        --datadir=/home/erigon/.local/share/erigon \\
+        --chain=dev \\
+        --networkid=32380 \\
+        --http.addr=0.0.0.0 \\
+        --http.port=8545 \\
+        --http.corsdomain='*' \\
+        --http.vhosts='*' \\
+        --http.api=eth,net,web3,trace,txpool,erigon,parity \\
+        --ws \\
+        --ws.port=8546 \\
+        --port=30303 \\
+        --nat=extip:${NAT_IP} \\
+        --log.console.verbosity=info \\
+        --maxpeers=50 \\
+        --bootnodes=${STATICNODE} \\
+        --staticpeers=${STATICNODE} \\
+        --sync.loop.throttle=100ms \\
+        --db.size.limit=100G \\
+        --prune.mode=full \\
+      "
