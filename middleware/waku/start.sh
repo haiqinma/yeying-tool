@@ -63,6 +63,9 @@ $WAKU_EXEC \
   --rest-port=8646 \
   --rest-address=0.0.0.0 \
   --rest-admin \
+  --ws \
+  --ws-port=60001 \
+  --ws-address=0.0.0.0 \
   ${STATIC_NODE} \
   --relay \
   --store \
