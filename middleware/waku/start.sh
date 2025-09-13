@@ -43,6 +43,10 @@ if [ -f "$PID_FILE" ]; then
   fi
 fi
 
+if [ ! -f ./nodekey ]; then
+   waku generate-key
+fi
+
 STATIC_NODE=""
 if [ -z ${BOOTNODE} ];  then
    STATIC_NODE="--staticnode=${BOOTNODE}"
@@ -69,6 +73,7 @@ $WAKU_EXEC \
   ${STATIC_NODE} \
   --relay \
   --store \
+  --store-message-db-url sqlite3://data/store.db \
   --filter \
   --lightpush \
   --pubsub-topic=$PUBSUB_TOPIC \
