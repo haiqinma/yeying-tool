@@ -18,7 +18,7 @@ PID_FILE="waku.pid"
 FORCE_RESTART=false
 
 # 创建目录
-mkdir -p ./{data, logs}
+mkdir -p ./{data,logs}
 
 # 解析参数
 while getopts "f" opt; do
@@ -51,7 +51,7 @@ if [ ! -f ./nodekey ]; then
 fi
 
 STATIC_NODE=""
-if [ -z ${BOOTNODE} ];  then
+if [ ! -z ${BOOTNODE} ];  then
    STATIC_NODE="--staticnode=${BOOTNODE}"
 fi
 
