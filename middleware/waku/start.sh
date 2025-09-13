@@ -17,6 +17,9 @@ LOG_FILE="logs/waku.log"
 PID_FILE="waku.pid"
 FORCE_RESTART=false
 
+# 创建目录
+mkdir -p ./{data, logs}
+
 # 解析参数
 while getopts "f" opt; do
   case $opt in
