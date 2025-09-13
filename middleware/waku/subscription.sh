@@ -13,4 +13,4 @@ PUBSUB_TOPIC=/waku/2/rs/${CLUSTER_ID}/0
 
 curl -X POST "${WAKU_URL}/relay/v1/subscriptions" \
   -H "Content-Type: application/json" \
-  -d "[$PUBSUB_TOPIC]"
+  -d "[\"$PUBSUB_TOPIC\"]"
