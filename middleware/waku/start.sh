@@ -12,7 +12,7 @@ BOOTNODE=${BOOTNODE}
 NAT_IP=${NAT_IP}
 
 # 定义变量
-WAKU_EXEC="./build/waku"
+WAKU_EXEC="waku"
 LOG_FILE="logs/waku.log"
 PID_FILE="waku.pid"
 FORCE_RESTART=false
