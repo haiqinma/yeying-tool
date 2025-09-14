@@ -10,6 +10,7 @@ CLUSTER_ID=${CLUSTER_ID:-3302}
 PUBSUB_TOPIC=/waku/2/rs/${CLUSTER_ID}/0
 BOOTNODE=${BOOTNODE}
 NAT_IP=${NAT_IP}
+LOG_LEVEL=${LOG_LEVEL:-INFO}
 
 # 定义变量
 WAKU_EXEC="waku"
@@ -54,12 +55,16 @@ STATIC_NODE=""
 if [ ! -z ${BOOTNODE} ];  then
    STATIC_NODE="--staticnode=${BOOTNODE}"
 fi
+NAT_IP_STR=""
+if [ ! -z ${NAT_IP} ];  then
+   NAT_IP_STR="--ext-ip=${NAT_IP}"
+fi
 
 # 启动新的进程
 $WAKU_EXEC \
   --log-encoding=nocolor \
   --log-output=file:$LOG_FILE \
-  --log-level=INFO \
+  --log-level=$LOG_LEVEL \
   --cluster-id=$CLUSTER_ID \
   --peer-store-capacity=10 \
   --persist-peers \
@@ -80,7 +85,8 @@ $WAKU_EXEC \
   --filter \
   --lightpush \
   --pubsub-topic=$PUBSUB_TOPIC \
-  --ext-ip=$NAT_IP &
+  ${NAT_IP_STR} \
+  &
 
 # 获取新进程的 PID
 NEW_PID=$!
