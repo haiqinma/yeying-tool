@@ -1,4 +1,4 @@
-部署
+# 部署
 
 1.安装docker、python3.12、go、node24等工具, 执行如下命令：
 
@@ -17,9 +17,9 @@
 
 
 
-讲解以太坊网络节点的部署流程:
+# 流程详解：
 
-部署创世节点
+## 1.部署创世节点
 
 准备工作：一定要修改`.env`文件中的NAT_IP为外网IP
 
@@ -28,7 +28,7 @@
 3、部署共识节点beacon
 4、部署验证节点validator, 确保验证者有足够ETH
 
-部署入网节点
+## 2.部署入网节点
 
 准备工作：一定要修改`.env`文件中的NAT_IP为外网IP
 
@@ -37,7 +37,7 @@
 3、部署共识节点prysm
 4、部署验证节点validator，确保验证者有足够ETH
 
-如何质押ETH？
+# 质押ETH
 
 1、准备阶段：生成验证者密钥对；设置提取地址（你的以太坊地址）；准备32 ETH
 2、存款阶段：调用存款合约；发送32 ETH到存款合约；提交验证者公钥和存款数据
@@ -48,7 +48,19 @@
 geth attach ${HOME}/.network/<network name>/execution/geth.ipc
 
 
-当前重启节点存在问题？
+# 问题汇总
+
+## 当前重启beacon节点无法恢复
 
 整个geth的无法正常出块，beacon chain的日志如下：level=error msg="Could not compute head from new attestations" error="0x577fda890fb731bff1a2d28a89e8106a0b88e208624d699940ff4daa723b7ea6: unknown justified root" prefix=blockchain
+
+解决方案：清理掉数据从其他节点同步恢复
+
+## beacon节点连接超过上限
+
+time="2025-09-15 01:15:13" level=debug msg="Initiate peer disconnection" direction=Inbound error="peer is from a bad IP: collocation limit exceeded: got 9 - limit 5" multiaddr="/ip4/10.15.10.72/udp/13000/quic-v1/p2p/16Uiu2HAmBWU53j1n4qTwVpMGxBKL9558VpVagZ9ZFVfueZ95Eb5M" prefix=p2p remainingActivePeers=0
+
+通过脚本 `beacon/get-peer.sh` 确认是否操作上限；
+使用参数 `--p2p-static-id` 生成beacon的密钥，固定peer id；
+
 

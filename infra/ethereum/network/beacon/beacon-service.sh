@@ -235,6 +235,7 @@ start_beacon() {
 
     local beacon_cmd="beacon-chain \
         --datadir $OUTPUT_DIR/data/consensus \
+        --p2p-static-id \
         --min-sync-peers 0 \
         --genesis-state $OUTPUT_DIR/data/consensus/genesis.ssz \
         --chain-config-file $OUTPUT_DIR/data/consensus/config.yaml \
