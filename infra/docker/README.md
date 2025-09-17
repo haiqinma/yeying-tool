@@ -13,6 +13,44 @@
 
 ./install.sh
 
+# 构建镜像
+
+```shell
+# 支持更多架构
+docker buildx build \
+  --platform linux/amd64,linux/arm64,linux/arm/v7 \
+  --tag your-username/your-app:latest \
+  --push \
+```
+
+# 清理镜像
+
+## 清理未使用的镜像
+
+```shell
+# 清理悬空镜像（dangling images）
+docker image prune
+
+# 清理所有未使用的镜像
+docker image prune -a
+
+# 强制清理，不询问确认
+docker image prune -a -f
+```
+
+## 清理未使用的资源
+
+```shell
+# 清理未使用的镜像、容器、网络和构建缓存
+docker system prune
+
+# 清理所有未使用的资源（包括未使用的镜像）
+docker system prune -a
+
+# 强制清理
+docker system prune -a -f
+```
+
 # 调用本地其他容器服务
 
 举例说明：
@@ -61,6 +99,4 @@ services:
 
 3. 修改宿主机上的目录权限:
 sudo chown -R 1000:1000 ./data
-
-
 
