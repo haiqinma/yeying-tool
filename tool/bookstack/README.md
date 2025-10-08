@@ -1,11 +1,13 @@
 
 部署bookstack
 
-1. 拷贝.env.template到.env
+1. 目录说明：
 
-2. 配置.env的PUID和PGID, 执行`id <your_user>`获得宿主机的用户和用户组, 如下：uid=0(root) gid=0(root) groups=0(root)，具体配置如下：
-PUID=0
-PGID=0
+./data/uploads：用来存放图片，wiki中创建的图片
+./data/logs：用来存储日志
+./data/storage：用来存放上传的文件
+
+2. 拷贝.env.template到.env
 
 3. 配置数据库
 
