@@ -1,12 +1,13 @@
----
 services:
   bookstack:
-    image: linuxserver/bookstack:25.07.2
+    image: yeying2025/bookstack:25.07.3
     container_name: bookstack
     env_file:
       - .env
     volumes:
-      - ./data:/config
+      - ./data/uploads:/app/public/uploads
+      - ./data/logs:/app/storage/logs
+      - ./data/storage:/app/storage/uploads
     ports:
       - 6875:80
     extra_hosts:
