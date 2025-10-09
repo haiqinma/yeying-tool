@@ -13,4 +13,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
+    command: sh -c "php artisan migrate --database=mysql --force && chown -R www-data storage public/uploads bootstrap/cache && exec apache2-foreground"
+
 
