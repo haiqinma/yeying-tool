@@ -11,21 +11,19 @@ set -euo pipefail
 # 检查是否提供了 tag 参数
 if [ $# -ne 1 ]; then
     echo "Hint Usage: $0 <tag-name>"
-    echo "     Example: bash $0 v1.2.3"
+    echo "     Example: bash $0 v2.16.1"
     exit 1
 fi
 
 TAG_NAME="$1"
-REPO_DIR="$HOME/code/BookStack"
-COMPOSER_LOCK="$REPO_DIR/composer.lock"
+REPO_DIR="$HOME/code/NextChat"
 DOCKERFILE="$CURRENT_DIR/Dockerfile"
-ORIGIN_URL="git@github.com:yeying-community/BookStack.git"
+ORIGIN_URL="git@github.com:yeying-community/NextChat.git"
 BUILDER_NAME="multi-builder"
 DOCKERHUB_USER="yeying2025"
-PACKAGES="$CURRENT_DIR/packages"
 
 index=1
-echo -e "\n${COLOR_BLUE}step $index -- 正在准备构建 BookStack 镜像，目标 tag: $TAG_NAME ${COLOR_NC}"
+echo -e "\n${COLOR_BLUE}step $index -- 正在准备构建 NextChat 镜像，目标 tag: $TAG_NAME ${COLOR_NC}"
 
 
 if [ ! -d "$REPO_DIR" ]; then
@@ -39,10 +37,6 @@ fi
 
 
 cd "$REPO_DIR"
-
-sed -i 's|"url": "https://codeberg.org/api/v1/repos/danb/HtmlDiff/archive/%prettyVersion%.zip"|"url": "file:///app/%prettyVersion%.zip"|g' "$COMPOSER_LOCK"
-sed -i 's|"url": "https://codeberg.org/api/v1/repos/danb/asserthtml/archive/%prettyVersion%.zip"|"url": "file:///app/%prettyVersion%.zip"|g' "$COMPOSER_LOCK"
-cp -rf ${PACKAGES}/* .
 
 index=$((index+1))
 echo -e "\n${COLOR_BLUE}step $index -- 检查指定的tag是否存在 ${COLOR_NC}"
@@ -102,7 +96,7 @@ remove_v_prefix() {
 index=$((index+1))
 echo -e "\n${COLOR_BLUE}step $index -- 开始构建并推送多平台镜像 ${COLOR_NC}"
 short_tag=$(remove_v_prefix "$TAG_NAME")
-IMAGE_NAME="${DOCKERHUB_USER}/bookstack:$short_tag"
+IMAGE_NAME="${DOCKERHUB_USER}/nextchat:$short_tag"
 echo "镜像名称: $IMAGE_NAME"
 docker buildx build \
     --platform linux/amd64,linux/arm64 \
@@ -111,7 +105,7 @@ docker buildx build \
     --push \
     "$REPO_DIR"
 
-echo "镜像构建并推送成功！可在 Docker Hub 查看: https://hub.docker.com/r/${DOCKERHUB_USER}/bookstack/tags"
+echo "镜像构建并推送成功！可在 Docker Hub 查看: https://hub.docker.com/r/${DOCKERHUB_USER}/nextchat/tags"
 
 index=$((index+1))
 echo -e "\n${COLOR_BLUE}step $index -- 登出 Docker Hub ${COLOR_NC}"
