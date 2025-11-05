@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # this script is used to bakup wiki files
 # haiqinma - 20251029 - first version
+# haiqinma - 20251102 - compress backup files
 
 set -u
 set -o pipefail
@@ -59,11 +60,23 @@ else
 	exit 1
 fi
 
+index=$((index+1))
+echo -e "\nstep $index -- check compress file exist or not" | tee -a "$LOGFILE"
+COMPRESS_FILE="/root/code/yeying-tool/script/compress_file.sh"
+flag_compress_file=$(ssh "${REMOTE_USER}@${WIKI_HOST}" 'test -e ${COMPRESS_FILE}' )
+if [ "${flag_compress_file}" ]; then
+	echo -e "there is no script($COMPRESS_FILE) to compress file"
+	exit 2
+fi
+
+
+index=$((index+1))
+echo -e "\nstep $index -- clean old bakup files" | tee -a "$LOGFILE"
 KEEP_NUMBER=7
 LOCAL_BACKUP_DIRECTORY="/root/bak/bak_wiki/"
 if [ ! -d "$LOCAL_BACKUP_DIRECTORY" ]; then
     echo "directory is used to bakup wiki $LOCAL_BACKUP_DIRECTORY does no exist！" | tee -a "$LOGFILE"
-    exit 2
+    exit 3
 fi
 
 BACKUP_DIRS_COUNT=$(find "$LOCAL_BACKUP_DIRECTORY" -maxdepth 1 -type d -name "backup*" | wc -l)
@@ -77,21 +90,39 @@ backup_directory_name="backup"$(date +%Y%m%d-%H%M%S)
 index=$((index+1))
 echo -e "\nstep $index -- backup wiki files" | tee -a "$LOGFILE"
 local_backup_wiki=${LOCAL_BACKUP_DIRECTORY}/${backup_directory_name}/wiki
-mkdir -p ${local_backup_wiki}
+mkdir -p "${local_backup_wiki}"
 WIKI_NEED_BACKUP=(
-	"/root/code/yeying-tool/tool/bookstack/data"
+	"/root/code/yeying-tool/tool/bookstack/data/storage"
+	"/root/code/yeying-tool/tool/bookstack/data/uploads"
 	"/root/code/yeying-tool/tool/bookstack/packages"
 	"/root/code/yeying-tool/tool/bookstack/.env"
 )
 for item in "${WIKI_NEED_BACKUP[@]}"; do
 	echo "bakup wiki files: ${item}" | tee -a "$LOGFILE"
+	type_backup="directory"
 	if [[ "$item" == *env ]]; then
-		dest="${local_backup_wiki}/env"
+		local_dest="${local_backup_wiki}/env"
+		type_backup="file"
+	elif [[ "$item" == *data* ]]; then
+		local_dest="${local_backup_wiki}/data"
+		mkdir -p "${local_dest}"
 	else
-		dest="${local_backup_wiki}"
+		local_dest="${local_backup_wiki}"
 	fi
-	if ! scp -r "${REMOTE_USER}@${WIKI_HOST}:${item}" "${dest}" ; then
-		echo "ERROR! Failed to copy $item" | tee -a "$LOGFILE"
+	remote_directory=$(dirname "$item")
+	remote_name=$(basename "$item")
+
+	if [[ "$type_backup" == file ]]; then
+		if ! scp -r "${REMOTE_USER}@${WIKI_HOST}:${item}" "${local_dest}" ; then
+			echo "ERROR! Failed to copy wiki file $item" | tee -a "$LOGFILE"
+		fi
+	else
+		ssh "${REMOTE_USER}@${WIKI_HOST}" "bash ${COMPRESS_FILE} ${item}"
+		sleep 2
+		if ! scp -r "${REMOTE_USER}@${WIKI_HOST}:${remote_directory}/${remote_name}-*.tar.gz" "${local_dest}" ; then
+			echo "ERROR! Failed to copy wiki directory $item compressed file" | tee -a "$LOGFILE"
+		fi
+		ssh "${REMOTE_USER}@${WIKI_HOST}" "rm -f ${remote_directory}/${remote_name}-*.tar.gz"
 	fi
 done
 
@@ -99,20 +130,34 @@ done
 index=$((index+1))
 echo -e "\nstep $index -- backup mysql files" | tee -a "$LOGFILE"
 local_backup_mysql=${LOCAL_BACKUP_DIRECTORY}/${backup_directory_name}/mysql
-mkdir -p ${local_backup_mysql}
+mkdir -p "${local_backup_mysql}"
 MYSQL_NEED_BACKUP=(
 	"/root/code/yeying-tool/middleware/mysql/data"
 	"/root/code/yeying-tool/middleware/mysql/.env"
 )
 for item in "${MYSQL_NEED_BACKUP[@]}"; do
 	echo "bakup mysql files: ${item}" | tee -a "$LOGFILE"
+	type_backup="directory"
 	if [[ "$item" == *env ]]; then
-		dest="${local_backup_mysql}/env"
+		local_dest="${local_backup_mysql}/env"
+		type_backup="file"
 	else
-		dest="${local_backup_mysql}"
+		local_dest="${local_backup_mysql}"
 	fi
-	if ! scp -r "${REMOTE_USER}@${WIKI_HOST}:${item}" "${dest}" ; then
-		echo "ERROR! Failed to copy $item" | tee -a "$LOGFILE"
+	remote_directory=$(dirname "$item")
+	remote_name=$(basename "$item")
+
+	if [[ "$type_backup" == file ]]; then
+		if ! scp -r "${REMOTE_USER}@${WIKI_HOST}:${item}" "${local_dest}" ; then
+			echo "ERROR! Failed to copy mysql file $item" | tee -a "$LOGFILE"
+		fi
+	else
+		ssh "${REMOTE_USER}@${WIKI_HOST}" "bash ${COMPRESS_FILE} ${item}"
+		sleep 2
+		if ! scp -r "${REMOTE_USER}@${WIKI_HOST}:${remote_directory}/${remote_name}-*.tar.gz" "${local_dest}" ; then
+			echo "ERROR! Failed to copy mysql directory $item compressed file" | tee -a "$LOGFILE"
+		fi
+		ssh "${REMOTE_USER}@${WIKI_HOST}" "rm -f ${remote_directory}/${remote_name}-*.tar.gz"
 	fi
 done
 
